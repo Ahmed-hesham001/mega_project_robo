@@ -4,6 +4,11 @@
         <param name="port" value="9090" />
     </node>
 
+    <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true">
+        <rosparam command="load" file="$(find megaProject/config/ekf.yaml)" />
+        <remap from="odometry/filtered" to="odom" />
+    </node>
+
     <!-- Start the movement_control node -->
     <node name="movement_control" pkg="megaProject" type="movement_control" output="screen">
     </node>
