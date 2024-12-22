@@ -1,0 +1,10 @@
+<launch>
+    <!-- Start ROSBridge WebSocket server -->
+    <node name="rosbridge_websocket" pkg="rosbridge_server" type="rosbridge_websocket" output="screen">
+        <param name="port" value="9090" />
+    </node>
+
+    <!-- Start the movement_control node -->
+    <node name="movement_control" pkg="megaProject" type="movement_control" output="screen">
+    </node>
+</launch>
