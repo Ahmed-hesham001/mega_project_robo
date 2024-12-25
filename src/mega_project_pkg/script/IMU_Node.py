@@ -1,7 +1,7 @@
 import rospy
 from mpu6050 import mpu6050
 from std_msgs.msg import Float64
-from mega_project.msg import imu
+from mega_project_pkg.msg import imu
 import time
 
 class  mpu_node:

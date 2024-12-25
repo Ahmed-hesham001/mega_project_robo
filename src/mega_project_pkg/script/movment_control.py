@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import rospy
-from megaProject.msg import controller
+from mega_project_pkg.msg import controller
 import mdds10
 import math
 
