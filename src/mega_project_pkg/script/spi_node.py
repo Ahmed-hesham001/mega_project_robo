@@ -2,7 +2,7 @@
 
 import rospy
 import spidev
-from std_msgs.msg import Bool
+from std_msgs.msg import Int32
 
 class SPINode:
     def __init__(self):
@@ -15,7 +15,7 @@ class SPINode:
         self.rate_hz = rospy.get_param('~rate', 10)
         
         # ROS publisher
-        self.pub = rospy.Publisher('spi/boolean_flag', Bool, queue_size=10)
+        self.int_pub = rospy.Publisher('rostoweb/mine', Int32, queue_size=10)
         self.rate = rospy.Rate(self.rate_hz)
         
         # Initialize SPI
@@ -37,31 +37,32 @@ class SPINode:
         self.spi.lsbfirst = False
         self.spi.threewire = False
 
-    def get_flag(self):
+    def read_spi_data(self):
         try:
             # Send dummy byte to receive data
             data = self.spi.xfer2([0x00])
-            return bool(data[0])
+            return data[0]  # Return single byte as integer
+            
         except (spidev.SpiDevError, IOError) as e:
             rospy.logerr("SPI read error: %s", e)
-            return False
+            return 0
         except Exception as e:
             rospy.logerr("Unexpected error: %s", e)
-            return False
+            return 0
 
     def publish_msg(self):
         rospy.loginfo("Starting SPI message publication at %d Hz", self.rate_hz)
-        last_value = None
+        last_int = None
         
         while not rospy.is_shutdown():
             try:
-                boolean_value = self.get_flag()
+                int_value = self.read_spi_data()
                 
-                # Only publish if value changed
-                if boolean_value != last_value:
-                    self.pub.publish(boolean_value)
-                    rospy.logdebug("Value changed: %s", boolean_value)
-                    last_value = boolean_value
+                # Publish integer value if changed
+                if int_value != last_int:
+                    self.int_pub.publish(int_value)
+                    rospy.logdebug("Integer value changed: %d", int_value)
+                    last_int = int_value
                     
                 self.rate.sleep()
             except rospy.ROSInterruptException:
